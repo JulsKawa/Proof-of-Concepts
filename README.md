@@ -104,7 +104,7 @@ Potential proof-of-concepts that fit this repository:
 - [Silex Language Documentation](https://docs.xelis.io/features/smart-contracts/silex)
 - [XELIS Virtual Machine](https://github.com/xelis-project/xelis-vm)
 - [XELIS Blockchain Repository](https://github.com/xelis-project/xelis-blockchain)
-- [XELIS Forge Contracts](https://github.com/XELIS-Forge/smart-contracts) - Production examples\
+- [XELIS Forge Contracts](https://github.com/XELIS-Forge/smart-contracts) - Production examples
 
 ## Security Considerations
 
