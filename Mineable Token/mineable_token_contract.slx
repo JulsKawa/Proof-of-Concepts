@@ -136,7 +136,7 @@ hook constructor() -> u64 {
 
     storage.store("asset", asset.unwrap().get_hash())
     storage.store("diff", INITIAL_DIFFICULTY)
-    storage.store("prev_hash", Hash::zero())
+    storage.store("prev_hash", Transaction::current().unwrap().hash())
     storage.store("block", 0)
     storage.store("lasttime", Block::current().timestamp())
     storage.store("adjtime", Block::current().timestamp())
