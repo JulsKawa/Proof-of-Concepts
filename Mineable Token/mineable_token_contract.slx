@@ -42,12 +42,14 @@ fn generate_header_hash(
     miner: Address,
     difficulty: u256,
     prev_hash: Hash,
+    prev_hash_xel: Hash,
     ts: u64
 ) -> Hash {
     let header: bytes = block_number.to_le_bytes()
     header.extend(miner.to_bytes())
     header.extend(difficulty.to_le_bytes())
     header.extend(prev_hash.to_bytes())
+    header.extend(prev_hash_xel.to_bytes())
     header.extend(ts.to_le_bytes())
 
     return Hash::blake3(header)
@@ -152,6 +154,7 @@ hook constructor() -> u64 {
     storage.store("asset", asset.unwrap().get_hash())
     storage.store("diff", INITIAL_DIFFICULTY)
     storage.store("prev_hash", Transaction::current().unwrap().hash())
+    storage.store("prev_hash_xel", Block::current().hash())
     storage.store("block", 0)
     storage.store("lasttime", Block::current().timestamp())
     storage.store("adjtime", Block::current().timestamp())
@@ -168,6 +171,7 @@ entry submit_solution(nonce: u64, ts: u64) {
     let asset_hash: Hash = storage.load("asset").expect("noAsset")
     let difficulty: u256 = storage.load("diff").expect("noDiff")
     let prev_hash: Hash = storage.load("prev_hash").expect("noPrev")
+    let prev_hash_xel: Hash = storage.load("prev_hash_xel").expect("noPrevXel")
     let block_number: u64 = storage.load("block").expect("noBlock")
     let last_time: u64 = storage.load("lasttime").expect("noLastTime")
     let last_adj: u64 = storage.load("adjtime").expect("noAdjTime")
@@ -185,7 +189,7 @@ entry submit_solution(nonce: u64, ts: u64) {
     let miner: Address = get_caller().expect("noCaller")
 
     let header_hash: Hash =
-        generate_header_hash(block_number, miner, difficulty, prev_hash, ts)
+        generate_header_hash(block_number, miner, difficulty, prev_hash, prev_hash_xel, ts)
 
     let pow_hash: optional<Hash> =
         verify_sha256d(header_hash, nonce, difficulty)
@@ -203,6 +207,7 @@ entry submit_solution(nonce: u64, ts: u64) {
     let new_block: u64 = block_number + 1
     storage.store("block", new_block)
     storage.store("lasttime", ts)
+    storage.store("prev_hash_xel", Block::current().hash())
 
     let new_diff: u256 = difficulty
     if new_block % DIFFICULTY_ADJUSTMENT_INTERVAL == 0 {
